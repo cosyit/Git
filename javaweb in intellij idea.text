@@ -215,33 +215,33 @@ $符号表示取一个变量的值，这个变量就是在我们新建的HelloSe
 
 为了让web应用跑起来。
 在idea中配置tomcat，需要注意以下步骤：
-1.	点击run  >  edit configurations ，弹出run/debug对话框;
-2.	点击左上角 + 号按钮（或者alt+ins快捷键），然后选择tomcat sever，选择local选项
-3.	对tomcat命名，譬如，tomcat，取消after lauch按钮，添加本地tomcat，并在下拉框中选择一个tomcat
-4.	切换到depolyment选项卡，单击右侧 + 号（alt + ins快捷键），选择artifact…选项，弹出Select Artifact to Deyploy对话框。
-5.	选择chapter1：war is exploded （war包被分解），单击OK（或者enter键），关闭Select Artifact to Deyploy对话框。
-6.	切换到run/debug configuration 对话框，在application context（应用上下文环境）中输入 /chapter1
-7.	切回sever选项卡，在On frame deactivation（在你失去焦点的时候自动编译）下拉框中选择如下
+1.点击run  >  edit configurations ，弹出run/debug对话框;
+2.点击左上角 + 号按钮（或者alt+ins快捷键），然后选择tomcat sever，选择local选项
+3.对tomcat命名，譬如，tomcat，取消after lauch按钮，添加本地tomcat，并在下拉框中选择一个tomcat
+4.切换到depolyment选项卡，单击右侧 + 号（alt + ins快捷键），选择artifact…选项，弹出Select Artifact to Deyploy对话框。
+5.选择chapter1：war is exploded （war包被分解），单击OK（或者enter键），关闭Select Artifact to Deyploy对话框。
+6.切换到run/debug configuration 对话框，在application context（应用上下文环境）中输入 /chapter1
+7.切回sever选项卡，在On frame deactivation（在你失去焦点的时候自动编译）下拉框中选择如下
     on update action: Redeploy
     on frame deactivation: Update classes and resoureces
     单击OK，完成所有配置。
-8.	单击idea 工具栏上的run或者debug（推荐，可实时编译），启动tomcat并部署web应用
+8.单击idea 工具栏上的run或者debug（推荐，可实时编译），启动tomcat并部署web应用
 注意：在热部署web应用的时候，ctrl + F9可以手动编译，如果在有修改了标识符（类名，方法名，成员名，变量名等）的时候，是无法进行热部署的。
 9.  运行tomcat服务器，打开浏览器，地址栏输入localhost:/8080/chapter1/hello
     刷新后可以如果看到一个页面，包含的信息是“时间：XXXX-XX-XX-XX-XX-XX”，那么说明这个web项目搭建成功。
  
 七、 提交本地git仓库
 
-1.	在idea中，找到VCS菜单，单击import into version control  >  create git repository…
+1.在idea中，找到VCS菜单，单击import into version control  >  create git repository…
 在弹出的对话框中，选中项目根目录（包含所有项目文件），单击OK，关闭对话框（此时，相当我们的git init命令）
-2.	再次选中项目根目录（在左侧菜单中选中），在VCS菜单中（或者右键菜单），单击git add，项目快照进入暂存区，要从暂存区推送到本地版本库，需要git commit
-3.	在VCS菜单或者右键菜单，单击Git > Commit Directory，在弹出对话框中确认是否进行提交操作，在commit message内，写入 –m “” 提交信息，单击commit按钮，即可提交项目到本地git仓库。（注意：没add的任何代码，是无法进行commit操作的。）也可以单击工具栏中的commit changes 按钮，或者使用快捷键ctrl + K 来做同样的事情。
+2.再次选中项目根目录（在左侧菜单中选中），在VCS菜单中（或者右键菜单），单击git add，项目快照进入暂存区，要从暂存区推送到本地版本库，需要git commit
+3.在VCS菜单或者右键菜单，单击Git > Commit Directory，在弹出对话框中确认是否进行提交操作，在commit message内，写入 –m “” 提交信息，单击commit按钮，即可提交项目到本地git仓库。（注意：没add的任何代码，是无法进行commit操作的。）也可以单击工具栏中的commit changes 按钮，或者使用快捷键ctrl + K 来做同样的事情。
 PS：在提交代码的时候，建议勾选Optimize imports（最优化导入），可以优化import语句，去掉未使用的包。
 
 
 八、推送远程仓库
 
-1、	VCS菜单 > git push 菜单（ctrl + shift + K），（注意：推送前，必须让本地仓库与远程仓库建立连接），我们可以使用开源中国的码云仓库，也可以使用github的仓库，首先，我们需要在他们当中创建一个仓库，然后，执行如下命令：
+1、VCS菜单 > git push 菜单（ctrl + shift + K），（注意：推送前，必须让本地仓库与远程仓库建立连接），我们可以使用开源中国的码云仓库，也可以使用github的仓库，首先，我们需要在他们当中创建一个仓库，然后，执行如下命令：
 git remote add origin[简名]  Git的仓库地址；
 git push –u origin[简名] master 
 注意.gitignore的顺序问题。
