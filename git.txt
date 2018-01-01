@@ -74,13 +74,11 @@ git使用备忘
 
 ----3.git状态查看与修改
 
-	git status                     查看git仓库状态（修改过的文件但没有被add的文件，已add但未commit的文件等等，红色代表没有添加到暂								 存区的文件，绿色代表已经添加到暂存区但尚未提交的文件）
+	git status                     查看git仓库状态（修改过的文件但没有被add的文件，已add但未commit的文件等等，红色代表没有添加到暂	存区的文件，绿色代表已经添加到暂存区但尚未提交的文件）
 	git diff                       查看变更内容
-	git add （file_name 或 . ）    将指定文件添加到暂存区（stage、index）  .表示当前目录下的所有文件，file_name用于指
-								   定具体文件。注意，只有add到过暂存区的文件，才能被git追踪到变化。
+	git add （file_name 或 . ）    将指定文件添加到暂存区（stage、index）  .表示当前目录下的所有文件，file_name用于指定具体文件。注意，只有add到过暂存区的文件，才能被git追踪到变化。
 	git commit -m ""               将暂存区中的文件提交到本地版本仓库。 -m表示允许写入版本说明信息，""内写入版本说明信息
-	git commit -am ""              将文件add到暂存区并提交到本地仓库，-a 表示add的意思。但是要注意，这个文件必须以前add到过暂
-								   存区，所以该指令对新文件无效。
+	git commit -am ""              将文件add到暂存区并提交到本地仓库，-a 表示add的意思。但是要注意，这个文件必须以前add到过暂存区，所以该指令对新文件无效。
 	git mv (old_name)  (new_name)  修改文件名
 	git rm (file_name)             删除文件
 	git rm --cached (file_name)    停止追踪文件但是不删除，也就是说将文件从暂存区删除
@@ -100,8 +98,7 @@ git使用备忘
 
 	版本间穿梭是很常用的指令，有了这些指令，我们就可以在以往的工作版本节点间游走了，打大boss也不怕了，可以读档了。
 
-	git resert --hard （版本号、HEAD相对值）   版本号是指SHA-1码，可以使用log/reflog获得具体的版本号，可以理解为绝对值；
-											   HEAD使用^表示当前的上一个版本，两个^^表示上上一个版本，可以理解为相对值，HEAD甚至可以使用HEAD~n来表示具体的版本，n表示往上第几个。例如，HEAD~365，表示往上第365个。
+	git resert --hard （版本号、HEAD相对值）   版本号是指SHA-1码，可以使用log/reflog获得具体的版本号，可以理解为绝对值；HEAD使用^表示当前的上一个版本，两个^^表示上上一个版本，可以理解为相对值，HEAD甚至可以使用HEAD~n来表示具体的版本，n表示往上第几个。例如，HEAD~365，表示往上第365个。
 	git reset --soft （版本号/相对版本）       commit内容会被指定的版本覆盖，但不覆盖到工作区
 
 ----6.分支创建、管理、合并
@@ -112,8 +109,7 @@ git使用备忘
 	git branch -d (branch_name)			 删除一个分支
 	git checkout （branch_name/tag_name）切换一个分支，注意，切换不同的分支，会自动覆盖工作区，有重要更新的时候，要记得commit一下
 	git checkout -b （branch_name）      创建一个分支，并切换到这个分支，-b表示branch
-	git merge (branch_name)	             将某个分支合并到当前分支上，注意一点，尽量不要进行大合并，养成经常合并的习惯，差别
-										 过大的合并，可能引起合并冲突等一些问题。
+	git merge (branch_name)	             将某个分支合并到当前分支上，注意一点，尽量不要进行大合并，养成经常合并的习惯，差别过大的合并，可能引起合并冲突等一些问题。
 
 ----7.tag 发布版本标签
 
@@ -129,15 +125,14 @@ git使用备忘
 
 	终于可以把本地仓库的文件推送到远程服务器保存了。这样再也不用害怕电脑爆炸导致代码丢失了。
 
-	git remote -v                                 查看远程版本库信息（注意哦，要cd到进行过git init的仓库下使用这
-											      个命令，不然什么都没有）
+	git remote -v                                 查看远程版本库信息（注意哦，要cd到进行过git init的仓库下使用这个命令，不然什么都没有）
 	git remote show (remote)                      查看指定的远程版本库信息
 	git remote add （alias）（repository_url）    为某个远程仓库创建一个别名alias，这样就不用每次推送都使用冗长的url了
 	git remote rm （alias）                       删除某个远程仓库
 	git fetch (remote)  (branch_name)             从某个远程仓库中拉取文件
 	git pull  (remote)  (branch_name)             从某个远程仓库中拉取文件并合并
   	git push  -u (remote)  (branch_name/tag_name) 想某个远程仓库推送文件。其中-u是指定默认的仓库，只需要第一次指定接口，之后的
-  												  push如果目标不变，可以直接省略后面的参数。
+  	                                              push如果目标不变，可以直接省略后面的参数。
   	git push --tags                               推送所有带有tag标签的版本
 
 四、生成本地的git公钥
@@ -161,7 +156,7 @@ git使用备忘
 	
 	.gitignore的样例：
 
-	      #下面是我的gitignore文件的内容
+          #下面是我的gitignore文件的内容
           #忽略gitignore文件
           .gitignore
           #忽略后缀名为.o和.a的文件
