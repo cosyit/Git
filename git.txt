@@ -62,7 +62,7 @@ git bash 一个字体缩放： ctrl + 滚轮  或者 ctrl -/+
 	15. head 查看头部，-n 与tail作用相同
 	16. mv (file_name) (target_path/new_name)  将某个文件移动到目标目录或者改名
 	
-	*在输入过程中，按table可以提示输入，方向键上可以调出之前的输入过的命令。
+	------------------在输入过程中，按table可以提示输入，方向键上可以调出之前的输入过的命令----------------------
 
 三、git相关常用命令
 	
@@ -134,7 +134,7 @@ git bash 一个字体缩放： ctrl + 滚轮  或者 ctrl -/+
 	git remote -v                                 查看远程版本库信息（注意哦，要cd到进行过git init的仓库下使用这个命令，不然什么都没有）
 	git remote show (remote)                      查看指定的远程版本库信息
 	git remote add （alias）（repository_url）    为某个远程仓库创建一个别名alias，这样就不用每次推送都使用冗长的url了
-	git remote rm （alias）                       删除某个远程仓库
+	git remote rm （alias）                       删除某个远程仓库，rm换成remove也可以
 	git fetch (remote)  (branch_name)             从某个远程仓库中拉取文件
 	git pull  (remote)  (branch_name)             从某个远程仓库中拉取文件并合并
   	git push  -u (remote)  (branch_name/tag_name) 想某个远程仓库推送文件。其中-u是指定默认的仓库，只需要第一次指定接口，之后的
@@ -143,7 +143,7 @@ git bash 一个字体缩放： ctrl + 滚轮  或者 ctrl -/+
 
   	9、帮助信息
 
-  	git log --help  直接跳转到官网的帮助文档
+  	git log --help  直接跳转到帮助文档，功能强大
 
 
 四、生成本地的git公钥
