@@ -1,0 +1,243 @@
+Mybatis
+
+感谢木木老师带我走进Mybatis的世界。
+
+一、What's Mybatis？
+	
+	Mybatis前身是ibatis，是一个持久层的半自动ORM框架。可以方便地自定义sql语句，更方便我们优化sql语句，定制个性化的sql语句操作。
+
+二、Mybatis的执行过程（基于xml文件方式）
+
+	Mybatis官网中还有不使用xml文件的方式，这里就不介绍了。因为我也没有使用过。
+	
+	首先，既然是基于.xml文件的方式，我们就需要在类路径下创建我们的mybatis-config.xml文件。这个文件包含了我们需要的全局配置，例如数据库的用户名和密码等等，一些个性化的设置也可以在这里设置，也可以设置别名，同时mapper.xml文件也需要在这里映射。文件怎么写？
+
+	远古的方式（long long ago）：
+		1.创建mapper.xml文件（文件包含sql语句映射，每个sql语句有对应的id，resultparameter，parameter等）
+		2.创建一个Pojo（简单的java类）
+		3.使用Mybatis-config.xml全局配置文件，获得一个SqlSessionFactory对象，通过这个工厂对象的openSession()方法，获得对应的SqlSession对象，利用这个SqlSession对象，我们可以直接使用它的方法，传入在mapper.xml文件中对应的sql语句的id，以及parameter，根据我们的出入数据，我们可以获得我们规定的返回值类型，这里要是查询的话，我们就返回一个上面定义的pojo类型的对象。
+
+		缺点：一般为了防止id重复，我们会在id前面添加我们自己定义的mapper命名空间，然后在使用SqlSession对象的方法时，我们就需要使用这个冗长的id了，同时参数的传入也显得随意性较大，没有足够的检查；
+
+	改革开放的方式（面向接口编程）（相比远古方式，我们多了一个接口）：
+		1.创建一个Pojo
+		2.创建一个Pojo相关的mapper接口，我这里命名为PojoMapper，并在这个接口里，声明一些我们需要的方法，就一查询一条数据库数据为例，我需要返回的是一个相关的pojo对象，因此可以这样写：Pojo getPojo(int id)，这里也就是说使用id作为参数，返回值类型是一个Pojo类型。而且我们不需要提供方法实现。
+		3.创建一个mapper.xml映射文件。同样，这里跟第一种方式基本相同看，不同的是，我们这里的命名空间不能任性了，要写mapper接口的全类名，各个sql语句的id值，也要写对应的方法名，参数，返回值等等，都要相同
+		4.同样，使用Mybatis-config.xml文件，获得一个SqlSessionFactory对象，通过使用这个工厂对象的openSession()方法，再获得一个SqlSession对象，但是，这里就不再是直接使用Sqlsession的其他操作语句来操作了，而是通过使用它的getMapper()方法，参数就是对应的mapper.class，通过这样获得一个基于这个接口的实现对象（这里主要是Mybatis为接口使用了代理，获得的其实也就是一个代理对象），再强转为我们需要的mapper接口类型的实例，然后就可以调用这个接口里的方法了。
+
+		好处：在使用各个数据库操作的时候，不再需要看到各个冗长的id名字了，参数传递也有了类型检查，方法使用也有了明确的意思。
+
+三、Mybatis-config.xml全局配置文件
+
+	标签是有顺序的，如果希望一路顺风，就不要去改动这个顺序，要不然，你会改回来的。
+	
+	带s的标签，都有同名的子标签用于指定特定的内容。
+
+	properties   属性设置，一些基本配置，例如数据库用户名和密码，数据库的url，驱动等；
+
+	settings     重要设置，可以按自己的要求
+
+	typeAliases  别名处理，引用java类的名称可以写别名，长度很长、经常使用的类名可以起别名，别名不区分大小写
+				 package   批量别名，可以为某个包下的所有类起别名（包括子包里的类），默认是类名小写，但容易引起命名冲突
+				 @Alias    注解起别名，主要针对一些子包下的同名类来指定一个特定的别名，这个优先级比package方式高
+				不过，还是建议写全类名，这样方便以后查看类信息。
+
+	typeHandler  类型处理器。用于指定java数据类型与数据库数据类型的对应关系，由于两种系统的数据类型不同，因此需要类型处理器做这种类型适配。
+	Mybatis已经做好了大部分类型转换，在我们没指定的时候，Mybatis会自动将某个类型转换成最合适的类型再使用。我们也可以自定义类型处理器。
+
+	plugins      插件
+	
+	environments 环境配置。
+	内部environment标签可以用于配置具体的不同的环境（使用id标记），在environments中指定使用什么环境。
+	databaseIdProvider   用于支持多数据库厂商。不同的数据库厂商，Mybatis会有不同的数据库厂商标识。在该标签下，我们可以对不同的数据库厂商标识起别名。在mapper.xml中，可以向每条语句标签中写入databaseId指定具体的数据库厂商。
+	
+	mappers      将mapper.xml sql映射文件注册到全局文件中。resource属性，用于指定具体的配置文件，class属性，用于引用接口，但是mapper.xml文件必须与mapper接口放在同一个文件夹内，且需要同名。通过注解的方式也可以在没sql文件的情况下使用，将sql语句通过注解的方式写到接口上即可，但是不推荐，不好维护。
+			package子标签，用于批量注册mapper.xml文件，但是要将mapper.xml文件放到与接口同一个文件夹下才行。不过在工程中，这样看的话就会比较难看，为了分开配置文件和接口文件，我们可以在resource文件夹下再建一个与接口包路径相同的文件夹，这样在使用批量注册，也可以成功。不过，实际上这仅仅是从IDE的角度看起来分开了，其实到最终的时候，同一个类路径下的文件都会放到一起。简单的说，当我们分开的时候，再去系统下找到这个项目的文件夹，就会看到在同一个文件夹内，存放有mapper.xml文件与接口.java文件。虽然我们在IDE上分开了两个文件存放的位置，但是在最终的时候同一个路径下的东西都会放到一起。
+
+	1.标签先后是有顺序的，这个Mybatis官网上有，假如顺序不对，会引起错误。
+	2.properties内的内容，可以通过外部.properties文件提供
+	3.建议在setting标签中开启自动驼峰命名转换mapUnderscoreToCamelCase，这样javaBean与数据库的属性名命名方式就可以跟
+
+
+四、idea里使用Mybatis实现数据库的查操作（）
+
+	首先，建立一个Mybatis项目
+	1.引入mybatis依赖（顺便引入mySQL的JDBC driver）
+		这些依赖的获取，直接到中央仓库去搜索即可。
+
+		<dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+        </dependency>
+
+    2.连接MySQL数据库
+
+    	a.打开数据库界面。  view -> Tool window -> database， 会在右边打开数据库窗口。
+    	b.新建MySQL数据库连接。 
+    		左上角绿色+ 
+    		-> Database sources 
+    		-> MySQL 
+    		-> 填写数库用户名，密码，使用的数据库名，可以在下方进行test，测试结果绿色则表示连接成功
+    		-> 选择我们新建的数据库，右键 new table，填入我们的表信息，点击OK，创建表完成 
+    		-> 双击我们新建的表，alt + ins 插入新数据
+
+    3.添加mybatis-config.xml全局配置文件，放在类路径下，也就是resource，也可以有文件夹，只是要生成SqlSessionFactory的时候要写上具体的路径。
+
+    	<?xml version="1.0" encoding="UTF-8" ?>
+		<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+		<configuration>
+
+		     <properties resource="jdbc.properties"></properties>
+
+		    <environments default="development">
+		        <!-- 每个environment 对应一个 SqlSessionFactory -->
+		        <environment id="development">
+		            <transactionManager type="JDBC" />
+		            <dataSource type="POOLED">
+		                <property name="driver" value="${jdbc.driver}" />
+		                <property name="url" value="${jdbc.url}" />
+		                <property name="username" value="${jdbc.username}" />
+		                <property name="password" value="${jdbc.password}" />
+		            </dataSource>
+		        </environment>
+		    </environments>
+
+		    <mappers>
+		        <mapper resource="usermapper.xml"/>
+		    </mappers>
+
+		</configuration>
+
+
+		这个是对应的properties文件，只需改动数据库名，用户名，密码。
+
+		jdbc.driver   = com.mysql.jdbc.Driver
+		jdbc.url      = jdbc:mysql://localhost:3306/数据库名?useSSL=true&useUnicode=true&characterEncoding=utf8" />
+		jdbc.username = root
+		jdbc.password = root
+
+    4.创建1个POJO对象
+
+    	public class User {
+		    private String id;
+		    private String username;
+		    public String getId() {return id;}
+		    public void setId(String id) { this.id = id; }
+		    public String getUsername() { return username;}
+		    public void setUsername(String username) { this.username = username;}
+
+
+		    //重写toSring方法，方便输出看效果
+		    @Override
+    		public String toString() {
+        		return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    		}
+		}
+
+    5.创建一个mapper接口，在接口内部添加各中需要的方法，例如查询某个数据，增加某个数据等
+
+    	public interface UserMapper {
+
+    		User getUser(int id);	
+
+    	}
+
+    6.创建对应的mapper.xml文件。
+    	注意：
+    	将命名空间写上mapper接口的全类名，对应的sql语句id值为对应的方法名，如果是单个参数，可以直接写参数名字（单个参数其实什么名字都可以，会自动匹配），如果是多个参数，则需要注意，mybatis是以map的方式保存参数的。同时第一个参数是param1，第二个参数的key是param2，或者是0,1等索引值。对于改变参数key的方法，可以使用注解，传Map，传TO（转换对象）的方式。
+    	最好在resource下创建与mapper接口一样的文件路径，在这个路径下存放mapper.xml。这样做，既有利于文件分类，也有利于批量注册mapper.xml文件。
+
+    	<?xml version="1.0" encoding="UTF-8" ?>
+		<!DOCTYPE mapperPUBLIC "-//mybatis.org//DTD Mapper 3.0//EN""http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+		<mapper namespace="com.zsb.DAO.mapper.UserMapper">
+
+			<select id="getUser" parameterType="int" resultType="com.zsb.DAO.pojo.User">
+            	select * from t_user WHERE id= #{id}
+        	</select>
+
+		 </mapper>
+
+    7.创建工具类MybatisUtil
+    	在这个类里，我们主要是为了生成我们的SqlSessionFactory对象，每一个Mybatis application都对应这一个SqlSessionFactory。
+    	而且我们将它设置为一个类方法，方便调用。
+    	
+	    	public class MybatisUtils {
+
+		    	public static SqlSessionFactory getSqlSessionFactory(){
+
+		        String resources = "mybatis-config.xml";
+
+		        InputStream inputStream = null;
+
+		        //通过xml文件生成一个SqlSessionFactory对象
+		        //我们要借助输入流
+
+		        try {
+		            inputStream = Resources.getResourceAsStream(resources);  //借助的是mybatis提供的Resources
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		        	return new SqlSessionFactoryBuilder().build(inputStream);
+		        }
+			}
+
+    8.使用获得的SqlSesssionFactroy对象，获得一个SqlSession对象，通过这个SqlSession对象，获得一个mapper接口的代理对象，然后，使用这个接口的方法进行各种增删改查操作。
+
+    		public static void main(String[] args) {
+		        
+		        //通过之前工具类，获得一个SqlSessionFactory对象，由于这个方法是类方法，可以直接类名引用
+		        SqlSessionFactory sqlSessionFactory  = MybatisUtils.getSqlSessionFactory();
+		       
+		        //获得一个sqlSession缓存对象
+		        SqlSession sqlSession  = sqlSessionFactory.openSession();
+		        
+		        //获得接口的实现对象
+		        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+		  		
+		  		//查询数据库
+		        User user = mapper.getUser(1);  //查询id为1的User数据，使用一个User对象接收
+
+		        System.out.println(user);		//输出这个接收的user对象
+		        
+		        
+		        try{
+		        	 //最后统一提交我们的更改，如果在openSession参数里填入true，即可设置自动提交
+			        sqlSession.commit();
+
+		        }finally{ 
+
+			       //关闭大对象
+			        sqlSession.close();
+		        }       
+    		}
+
+
+
+
+ 五、注意点
+
+ 	1.自动提交：只需要在openSession方法上填上true即可。默认需要手动提交。
+
+ 	2.pojo对象，添加有参构造器后，必须添加无参构造器，这是框架使用的基础，因为框架使用了很多反射技术，涉及到无参构造器。
+
+ 	3.Mybatis自动识别Integer、Long、Boolean的返回值。举例来讲本来查询操作返回的是影响多少条记录，现在在这个查询方法上，添加一个boolean返回值类型即可，其他都不需要改变，会自动返回一个boolean值。如果查询到了会返回true（因为查询到1条）。
+ 	
+ 	4.多参数传入的注意点。Mybatis使用的是Map方式保存的参数列表，第一项是param1或是0，以此类推。但参数怎么传都可以，自动识别。
+ 	  同时，对于只有一个对象参数，也可以直接使用对应的属性名。
+ 	  或者，可以使用@param()注解每一个参数。但是参数数量多的时候很麻烦。  例如：@param("id")int id
+ 	  也可以传入一个Map对象，key就是属性名，更可以使用一个TO对象。
+
+六、不得不说的坑
+	1.在批量加载mapper.xml文件的时候，需要在resource下新建一个与mapper接口一致的目录，特别地，新建的时候不要使用.符号，直接逐层新建较为保险。我当初在这里浪费了不少时间，本来说mapper.xml文件放到与mapper接口一样的位置就可以了，但是问我发现还是有绑定异常，搞了一阵，才用视频里的方法，在resource下新建了一个一样的目录解决了这个问题。
