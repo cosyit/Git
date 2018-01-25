@@ -1,0 +1,383 @@
+Spring Framework
+
+	Maven依赖可以从Maven中央仓库找。
+	
+一、什么是Spring
+	a.Spring是一个轻量级控制反转(IoC)和面向切面(AOP)的容器框架。
+	对象的创建和管理的功能都交给了Spring去管理，我们需要对象的时候再和Spring去要就行
+
+二、Spring需要注意的地方
+	1.通过Spring创建的对象默认是单例
+
+三、intellij idea 中引入Spring框架
+
+	引入框架三步: 
+		a. 引入架包 
+		b. 创建配置文件 
+		c. 加载配置文件
+		
+	1.pom文件引入相关依赖
+		  <!-- springframe start -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- springframe end -->
+
+    2.web.xml引入
+
+    	<!--配置spring-->
+	    <context-param>
+	        <param-name>contextConfigLocation</param-name>
+	        <!--配置文件的路径-->
+	        <param-value>classpath:spring/Application.xml</param-value>
+	    </context-param>
+	    <listener>
+	        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	    </listener>
+	    <!--配置spring结束-->
+
+	    <!--配置springMVC-->
+	    <servlet>
+	        <servlet-name>dispatcher</servlet-name>
+	        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	        <init-param>
+	            <param-name>contextConfigLocation</param-name>
+	            <!--配置文件的路径-->
+	            <param-value>classpath:spring/Application-mvc.xml</param-value>
+	        </init-param>
+	        <load-on-startup>1</load-on-startup>
+	    </servlet>
+	    <servlet-mapping>
+	        <servlet-name>dispatcher</servlet-name>
+	        <url-pattern>/</url-pattern>
+	    </servlet-mapping>
+	    <!--配置springMVC结束-->
+
+	3.新建Application.xml
+
+		在resource下，新建一个Application.xml文件
+
+		<beans xmlns="http://www.springframework.org/schema/beans"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+			<!--这里是我们自己设置的bean，com.zsb.Test是我们之前已经创建的类（必须提供setter/getter
+			方法），这里相当于获得了一个testme实例，然后进行了赋值-->
+			<bean id="testme" class="com.zsb.Test">
+				<property name="name"  value="zsb">
+				</property>
+			</bean>
+
+		</beans>
+	+----------------------------------------------------------------------------------+
+	4.下面的步骤是通过java获得bean的属性值。
+		基于以上步骤，我们再在创建项目的时候自动生成的test下的java文件夹内，新建一个Test01的类；
+
+		有两种途径获得我们需要的bean内容。两种途径大体相同，只是寻找application.xml的途径不同。
+
+		a.通过类路径下（resource目录下）找到application.xml文件。
+
+			public class Test01 {
+		    public static void main(String[] args) {
+
+		        //加载配置文件得到一个环境，类似ServletContext是由web.xml得到的
+		        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"application.xml"});
+
+		        //通过applicationContext对象获得对应的bean，并向下转型为Test
+		        Test  test = (Test) applicationContext.getBean("testme");
+
+		        //通过我们获得test实例获得对应name属性的值
+		        System.out.println(test.getName());
+		   		}
+			}
+
+
+
+		b.通过文件系统找到application.xml文件（在idea内，获得文件路径的方式是右键点击文件，选择copy path，也可以快捷键ctrl + shift + c）
+
+			ClassPathXmlApplicationContext改为文件系统方式，并将绝对路径粘贴到对应的位置即可，其余内容相同。idea会自动帮我们添加转义\；
+
+			ApplicationContext applicationContext = new (new String[]{"E:\\tempfiles\\web2\\src\\main\\resources\\application.xml"});
+
+
+四、Spring的依赖注入（Dependency Injection）（也就是控制反转Inversion of Control）
+	
+	依赖一个接口比依赖一个具体的实现类具有更广泛的适应性，更灵活。
+
+	1.什么是依赖注入
+		所谓依赖注入，是指程序运行过程中，如果需要调用另一个对象协助时，无须在代码中创建被调用者，而是依赖于外部的注入。Spring的依赖注入对调用者和被调用者几乎没有任何要求，完全支持对POJO(Plain Ordinary Java Objects)之间依赖关系的管理。
+	
+	2.IoC的做法个人理解
+
+		当一个类对另一个类有依赖时，不再该类内部对依赖的类进行实例化，而是之前配置一个beans.xml，告诉容器所依赖的类，在实例化该类时，容器自动注入一个所依赖的类(Mobile)的实例。 
+
+		正常来讲，一个主类中使用另一个需求类，需要在这个主类内部实例化这个需求类，而且由于主类中调用了需求类的方法，
+		这样两个类的关系就非常密切了，假如我要更换需求类，那么这个主类也要修改；
+
+		面向接口的设计，
+		a.将需求类设计成了接口，
+		b.并使用需求实现类实现了这个接口，
+		c.最重要的是，使用了父类对象可以指向子类实例的特点。在主类中，声明了需求类接口的变量，同时在主类中使用了setter方法传入这个需求类接口类型的实例
+		这样，需求实现类的实例可以通过外部传入，并且，由于使用了面向接口编程，后续的需求类即使需要更改，工作量也很小。
+
+		而IoC的做法实在面向接口编程的基础上，使用了更加松耦合的文件关联方式来管理所有实例。调用与创建完全分离。通过xml配置各种关系。
+
+		这里好像有点可以知道为什么Spring默认每个类的实例都只有一个了。
+
+
+	3.Spring中的依赖注入方法
+
+		a.setter注入
+
+		b.构造注入
+
+		c.注解注入
+
+		d.配置管理类注入
+
+			具体有两种方式：
+			1.使用配置类提供扫描位置让Spring自动扫描获得Bean；
+			2.在配置类中使用@Bean注解方法，返回实例（有顺序；
+
+			方式1---------------------------------------------------------------------------------------------------------
+
+			1.声明配置类。
+				定义一个配置管理类，并使用@Configration注解标示为一个配置，使用@ConfiguraleScan()提供组件扫描范围。
+				
+				@Configration
+				@ConfigrableScan("packagepath")
+				public Class ConfigClass(){
+					//内容为空
+				}
+
+			2.声明Bean。定义具有相互依赖关系的两个Bean类。使用@Servic、@Component、@Repository、@Controller（具体使用哪个最好按照语义选用）注解我们的Bean类，指示Spring IoC容器将这些Bean类纳入管理；特别地，在有多个Bean的时候，我们需要为每个Bean指定一个名字；
+
+				@Service
+				public Class FunctionBean{
+					public void say(String name){
+						System.out.println("你好！" + name);
+					}
+				}
+
+				@Service
+				public Class FunctionServic{
+
+					@Autowired     //自动注入注解
+					private FunctionBean functionBean;
+					public void sayHello(){	
+						functionBean.say(name);
+					}
+				}
+
+			
+			3.Test类测试。因为我们使用了一个配置类，并没有使用.xml配置文件，因此我们在获取上下文环境的时候，不可以只用原有的
+			ApplicationContext ac = new ClassPathXmlApplicationContext(new String[]{"application.xml"});
+			改用
+			AnnotationConfigApplicationContext ac = new AnnotationConfiApplicationCont(配置文件.class);
+			之后的操作与以前相同。
+
+------------方式2------------------------------------------推荐这种方式---------------------------------------------
+
+				方式2与方式1稍有不同，主要是注解全部集中在了配置类里。
+
+			1.设计两个相互依赖的Bean。将上述两个Bean类中的注解去除，无需纳入IoC管理。
+
+			2.声明配置类。定义一个配置类，只使用@Configration注解为一个配置类。并使用@Bean注解内部方法，内部方法特点是会返回各自两个Bean的实例。注意，需要注入的类需要提供setter方法。。
+
+				@Configration
+				public Class ConfigClass(){
+
+					@Bean
+					public FunctionBean funb(){
+						return new FunctionBean();
+					}
+
+					@Bean
+					public FunctionService funs(){
+						FunctionService fs = new FunctionService();
+						fs.setFunctionBean(funb());
+						return fs;
+					}
+				}
+
+		application.xml配置文件中操作
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+
+    <!--我们只创建了两个类，Student，Car类，并且，Car类作为Student的一个属性，也就是
+    Student类依赖于Car类，但是，我们并没有在Student内创建Car类的实例，
+    通过使用application文件，我们成功关联了两个类的各自实例。在配置文件中，初始化Student实例的时候，
+    对于car属性的初始化，我们使用了ref指向了这个Car类属性，也就关联了两个实例。
+    但是我们并没有任何创建实例的操作。
+    所有的实例，在配置文件中已经纳入了Spring的管理，在我们需要这个实例的时候，也就可以直接
+    通过getBean，根据id获得了这个实例。-->
+
+   <!-- spring创建实例的方法
+    1.通过工厂方法获得实例，
+    <!-- 通过实例工厂方法来配置bean -->
+    <!-- 
+    class 属性：指向实例工厂方法的bean
+    factory-method ： 指向静态工厂方法的名字
+    constructor-arg ：如果工厂方法需要传入参数，则使用constructor-arg来配置参数。
+    2.通过无参构造器获得实例-->
+    <!--<bean id="指定实例名" class="具体类名">-->
+    
+    
+ <!--   初始化实例有三种方式：
+    1.property（set方法）
+    2.constructor-arg（构造方法）
+    3.@autowired/@resource（注解方法，比较少用）
+    
+    -->
+
+
+
+    <!--通过setter方法初始化实例-->
+   <!-- <bean id="newCar" class="com.zsb.Car">
+        <property name="brand" value="宝马BMW"></property>
+        <property name="price" value="1000000"></property>
+    </bean>
+    <bean id="newStudent" class="com.zsb.Student">
+            <property name="name" value="曾尚斌"></property>
+            <property name="age" value="10"></property>
+            <property name="sex" value="男"></property>
+            <property name="car" ref="newCar"></property>
+    </bean>-->
+
+    <!--构造方法初始化实例-->
+    <!-- 通过构造方法的初始化实例的方式，也存在两种小不同的方式(还有其他方式，但是不推荐)：
+    1.直接赋值（推荐）
+    2.利用索引赋值,不太好，按照构造器的参数顺序的，不易记忆，以及顺序一乱就基本报错-->
+    <bean id="newCar" class="com.zsb.Car">
+        <constructor-arg index="0" value="奔驰Benz"></constructor-arg>
+        <constructor-arg index="1" value="500000"></constructor-arg>
+    </bean>
+    <bean id="newStudent" class="com.zsb.Student">
+        <constructor-arg name="name" value="小羊"></constructor-arg>
+        <constructor-arg name="age"  value="40"></constructor-arg>
+        <constructor-arg name="sex"  value="男"></constructor-arg>
+        <constructor-arg name="car"  ref="newCar"></constructor-arg>
+    </bean>
+
+</beans>
+
+
+Bean的声明周期方法-----------------------------------------------------------------------------------------------------------
+
+1.Bean的生命周期
+	a.通过构造器或者工厂方法创建Bean实例
+	b.设置Bean属性值或引用
+	c.调用Bean初始化方法（init）
+	d.使用Bean
+	d.容器关闭时，调用destroy方法销毁Bean实例（destroy）
+
+2.Bean的生命周期方法
+	init()方法；		实例化后运行
+	destroy()方法；		销毁实例时运行
+
+3.生命周期方法的位置
+	在Bean类的内部创建。具体名字任意，只需要与配置中的名字对应即可。
+
+4.生命周期方法的使用
+	可在.xml文件中配置；也可以在配置类中指定，均由init-method属性与destroy-method属性指定。
+
+	.xml中
+	<Bean  .........    init-method = "init" destroy-method = "destroy">
+
+	配置类中
+	@Bean(initMethod = "inint",destroyMethod = "destroy")
+
+5.Bean后置处理器
+	提供在Bean初始化工作前后再加处理。
+
+	加上后置处理器后整个Bean生命周期：
+
+	a.通过构造器或者工厂方法创建Bean实例
+	b.设置Bean属性值或引用
+		将Bean实例传递给后置处理器postProcessBeforeInitialization方法
+	c.调用Bean初始化方法（init）
+		将Bean实例传递给后置处理器postProcessAfterInitialization方法
+	d.使用Bean
+	d.容器关闭时，调用destroy方法销毁Bean实例（destroy）
+
+6.Bean后置处理器的使用
+	Bean类必须实现一个BeanPostProcessor接口，并重写两个方法postProcessBeforeInitialization方法，postProcessAfterInitialization方法
+
+7.Bean后置处理的方法调用
+	这个方法自动由容器调用，无须我们手动调用，我们只需在方法体内部写我们的操作即可。
+
+
+
+
+Spring profile-------------------------------------------------------------------------------------------------------------
+
+Spring Bean Message-------------------------------------------------------------------------------------------------------- 
+
+Spring Aware---------------------------------------------------------------------------------------------------------------
+	BeanNameAware                       获得到容器中Bean的名称
+	BeanFactoryAware                    获得当前bean Factory,从而调用容器的服务
+	ApplicationContextAware             当前的application context从而调用容器的服务
+	MessageSourceAware                  得到message source从而得到文本信息
+	ApplicationEventPublisherAware      应用时间发布器,用于发布事件
+	ResourceLoaderAware                 获取资源加载器,可以获得外部资源文件
+
+Spring Thread--------------------------------------------------------------------------------------------------------------
+
+
+嗯，待续。。。
