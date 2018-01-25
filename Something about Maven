@@ -1,0 +1,53 @@
+Something about Maven
+
+一、对Maven的理解
+	Maven是一个构建工具，为了让我们更方便地引用外部jar包。
+
+二、对POM文件的认识
+
+	POM(Project Object Model)
+	POM文件包含项目的一些信息以及设置细节。
+	默认有一个super POM文件，里面提供了一些dafault value，在项目pom.xml文件没有定义的内容，会自动继承这个super POM文件；
+	最小型的POM文件需要包括以下内容：
+	--> project root
+	--> modelVersion - should be set to 4.0.0
+	--> groupId - the id of the project's group.
+	--> artifactId - the id of the artifact (project)
+	--> version - the version of the artifact under the specified group
+
+	最好参考官网解释，很详细。
+
+三、POM文件里的标签介绍与使用
+	
+	<project></project>      作用：POM文件的根标签，所有信息、设置，都写在这个标签内；
+
+	<parent></parent>		 作用：指定父POM（缺省情况下，默认是super POM），必须提供完整的groupID,artifactID,modelVersion，之后，
+									该项目的pom文件就义父POM文件作继承；
+
+	+-------------------------+								
+	<groupID></groupID>         指定具体的包
+	<artifactID></artifactID>	指定具体的构件
+	<version></version>			指定具体的版本
+								这三个标签是一起使用的，共同组成了一个jar包的坐标。
+	+-------------------------+
+
+	<packing></packing>		作用：Maven打包方式，有pom,maven-plugin,war,rar,zip，默认jar
+
+	<build></build>	
+
+	<plugins></plugins>     作用：插件添加标签，但是不能用来指定具体插件，只能用来声明内容是插件，作为提示与限定内容的标签
+
+	<plugin></plugin> 		作用：用来添加具体的插件，使用3个坐标标签
+
+ 	<dependencies></dependencies>    作用：依赖添加标签，但是不能用来指定具体依赖，只能用来声明内容是依赖，作为提示与限定内容标签；
+
+ 	<dependency></dependency>		作用：用来添加具体的依赖，使用3个坐标标签
+
+
+
+	<priperties></pripertiews>    作用：在此标签内部，可以定义变量，使用${}可以获得变量便签的内容，相当于一个宏定义；
+	例如：
+		<priperties>
+			<mavenversion>4.0.0</mavenversion>
+		</priperties>
+		<version>${mavenverion}</version>
